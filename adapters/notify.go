@@ -74,10 +74,10 @@ func (n AuthorMailNotifier) NotifyAboutCreationOf(a *models.Article) error {
 }
 
 type AuthorSmsNotifier struct {
-	client interface{}
+	client ports.SmsSender
 }
 
-func NewAuthorSmsNotifier(c interface{}) *AuthorSmsNotifier {
+func NewAuthorSmsNotifier(c ports.SmsSender) *AuthorSmsNotifier {
 	return &AuthorSmsNotifier{
 		client: c,
 	}

@@ -1,8 +1,8 @@
 package ports
 
-import m "github.com/chernyshev-alex/go-hexagon/domain/models"
+import "github.com/chernyshev-alex/go-hexagon/domain/models"
 
 type ArticleMessageSender interface {
-	SendMessageForCreated(*m.Article) error
-	SendMessageForRetrieved(*m.Article) error
+	SendMessageForCreated(*models.Article) error
+	SendMessageForRetrieved(*models.Article) error
 }

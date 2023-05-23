@@ -2,6 +2,7 @@ package adapters
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"log"
@@ -14,52 +15,58 @@ import (
 	"go.temporal.io/sdk/workflow"
 )
 
-type temporalSmsSender struct {
+type sendSmsWorkflow struct {
 	c client.Client
 }
 
-var _ ports.SmsSender = (*temporalSmsSender)(nil)
+var _ ports.SmsSender = (*sendSmsWorkflow)(nil)
 
-func NewSmsSender() temporalSmsSender {
-	if c, err := client.NewLazyClient(client.Options{
-		HostPort: client.DefaultHostPort}); err != nil {
+func CreateSender() *sendSmsWorkflow {
+	c, err := client.NewLazyClient(client.Options{HostPort: client.DefaultHostPort})
+	if err != nil {
 		panic(err.Error())
-	} else {
-		return temporalSmsSender{c: c}
 	}
+	return &sendSmsWorkflow{c: c}
 }
 
-func (s temporalSmsSender) SendToAuthor(to string, content string) error {
-	defer s.c.Close()
-	s.StartSendSmsWorkflow()
-	s.RunSmsWorker()
+func (s sendSmsWorkflow) CloseSender() error {
+	s.c.Close()
 	return nil
 }
 
-func (s temporalSmsSender) StartSendSmsWorkflow() {
-	workflowOptions := client.StartWorkflowOptions{
-		ID:        "send-sms_activity_" + uuid.NewString(),
-		TaskQueue: "send-sms-activity",
+// TODO  imp different workflows
+
+func (s sendSmsWorkflow) SendToAuthor(to string, content string) error {
+	// TODO create specific workflow here
+	if err := s.startSendSmsWorkflow(to); err != nil {
+		return fmt.Errorf("failed to start SendSms workflow: %w", err)
 	}
-	if wr, err := s.c.ExecuteWorkflow(context.Background(), workflowOptions, s.RetryNotifySmsWorkflow); err != nil {
-		log.Fatalln("Unable to execute workflow", err)
-	} else {
-		log.Println("Started workflow", "WorkflowID", wr.GetID(), "RunID", wr.GetRunID())
+	if err := s.RunSmsWorker(); err != nil {
+		log.Fatalln("Unable to run worker", err)
+		return err
 	}
+	return nil
 }
 
-func (s temporalSmsSender) RunSmsWorker() {
-	w := worker.New(s.c, "sms-activity", worker.Options{})
-	w.RegisterWorkflow(s.RetryNotifySmsWorkflow)
-	w.RegisterActivity(s.SendSmsActivity)
+const (
+	taskQueueName = "send-sms-activity"
+)
 
-	err := w.Run(worker.InterruptCh())
+func (s sendSmsWorkflow) startSendSmsWorkflow(sendTo string) error {
+	wOpts := client.StartWorkflowOptions{
+		ID:        fmt.Sprintf("send-sms-%s-%s", sendTo, uuid.NewString()),
+		TaskQueue: taskQueueName,
+	}
+	wr, err := s.c.ExecuteWorkflow(context.Background(), wOpts, s.notifySmsWorkflow, sendTo)
 	if err != nil {
-		log.Fatalln("Unable to start worker", err)
+		log.Fatalln("Unable to execute workflow", err)
+		return err
 	}
+	log.Println("Started workflow", "WorkflowID", wr.GetID(), "RunID", wr.GetRunID())
+	return nil
 }
 
-func (s temporalSmsSender) RetryNotifySmsWorkflow(ctx workflow.Context) error {
+func (s sendSmsWorkflow) notifySmsWorkflow(ctx workflow.Context, sendTo string) error {
 	opts := workflow.ActivityOptions{
 		StartToCloseTimeout: 2 * time.Minute,
 		HeartbeatTimeout:    10 * time.Second,
@@ -73,7 +80,7 @@ func (s temporalSmsSender) RetryNotifySmsWorkflow(ctx workflow.Context) error {
 
 	ctx = workflow.WithActivityOptions(ctx, opts)
 	logger := workflow.GetLogger(ctx)
-	if err := workflow.ExecuteActivity(ctx, s.SendSmsActivity, 0, 20, time.Second).Get(ctx, nil); err != nil {
+	if err := workflow.ExecuteActivity(ctx, s.sendSmsActivity, sendTo).Get(ctx, nil); err != nil {
 		logger.Error("Activity failed", "Error", err)
 		return err
 	}
@@ -81,6 +88,20 @@ func (s temporalSmsSender) RetryNotifySmsWorkflow(ctx workflow.Context) error {
 	return nil
 }
 
-func (s temporalSmsSender) SendSmsActivity(ctx context.Context, name string) error {
+func (s sendSmsWorkflow) RunSmsWorker() error {
+	w := worker.New(s.c, taskQueueName, worker.Options{})
+	w.RegisterWorkflow(s.notifySmsWorkflow)
+	w.RegisterActivity(s.sendSmsActivity)
+
+	err := w.Run(worker.InterruptCh())
+	if err != nil {
+		log.Fatalln("Worker failed to start", err)
+		return err
+	}
+	return nil
+}
+
+func (s sendSmsWorkflow) sendSmsActivity(ctx context.Context, name string) error {
+	fmt.Printf("SendSmsActivity %s", name)
 	return nil
 }

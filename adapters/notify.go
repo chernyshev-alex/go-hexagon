@@ -74,16 +74,15 @@ func (n AuthorMailNotifier) NotifyAboutCreationOf(a *models.Article) error {
 }
 
 type AuthorSmsNotifier struct {
-	client ports.SmsSender
+	sender ports.SmsSender
 }
 
-func NewAuthorSmsNotifier(c ports.SmsSender) *AuthorSmsNotifier {
+func NewAuthorSmsNotifier(s ports.SmsSender) *AuthorSmsNotifier {
 	return &AuthorSmsNotifier{
-		client: c,
+		sender: s,
 	}
 }
 func (n *AuthorSmsNotifier) NotifyAboutCreationOf(a *models.Article) error {
-	_ = NewArticleSmsModelFromArticle(a)
-	// TODO notify
-	return nil
+	am := NewArticleSmsModelFromArticle(a)
+	return n.sender.SendToAuthor(am.recipientId, am.text)
 }

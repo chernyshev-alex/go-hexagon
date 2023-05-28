@@ -5,10 +5,8 @@ import (
 )
 
 func TestSendToAuthor(t *testing.T) {
-	sender := CreateSender()
-	defer sender.CloseSender()
-	err := sender.SendToAuthor("@author", "text")
-	if err != nil {
+	wk := NewSendToAuthorWorkflow()
+	if err := wk.SendToAuthor("@author", "text"); err != nil {
 		t.Fatalf("failed %s", err)
 	}
 }

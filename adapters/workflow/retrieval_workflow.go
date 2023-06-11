@@ -30,13 +30,11 @@ func (p ForkJoinWorkflow) RunEtlWorkFlow() error {
 		TaskQueue: p.queueName(),
 	}
 
-	workflowRun, _ := cli.ExecuteWorkflow(context.Background(), opts, p.ParentWorkflow)
-
 	var results []string
+
+	workflowRun, _ := cli.ExecuteWorkflow(context.Background(), opts, p.ParentWorkflow)
 	if err := workflowRun.Get(context.Background(), &results); err != nil {
-		fmt.Println("Workflow failed:", err)
-	} else {
-		fmt.Println("Results:", results)
+		return err
 	}
 	return nil
 }
@@ -48,11 +46,12 @@ func (p ForkJoinWorkflow) ParentWorkflow(ctx workflow.Context) ([]string, error)
 		future := workflow.ExecuteChildWorkflow(childCtx, p.TaskChildWorkflow, fmt.Sprintf("Task-%d", i), p.config)
 		futures = append(futures, future)
 	}
+	logger := workflow.GetLogger(ctx)
 	results := make([]string, len(futures))
-	for i, future := range futures {
+	for i, f := range futures {
 		var result string
-		if err := future.Get(ctx, &result); err != nil {
-			return nil, err
+		if err := f.Get(ctx, &result); err != nil {
+			logger.Error(err.Error())
 		}
 		results[i] = result
 	}
@@ -62,8 +61,8 @@ func (p ForkJoinWorkflow) ParentWorkflow(ctx workflow.Context) ([]string, error)
 func (p ForkJoinWorkflow) TaskChildWorkflow(ctx workflow.Context, taskID string, config map[string]interface{}) (string, error) {
 	opts := workflow.ActivityOptions{StartToCloseTimeout: 10 * time.Second}
 	ctx1 := workflow.WithActivityOptions(ctx, opts)
-
 	logger := workflow.GetLogger(ctx1)
+
 	var result string
 	var sql = "insert into .." //  get SQL to execute
 	if err := workflow.ExecuteActivity(ctx1, p.RunSQL, taskID, sql).Get(ctx1, &result); err != nil {

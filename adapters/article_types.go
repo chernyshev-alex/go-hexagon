@@ -3,7 +3,7 @@ package adapters
 import (
 	"errors"
 
-	"github.com/chernyshev-alex/go-hexagon/domain/models"
+	"github.com/chernyshev-alex/go-hexagon/domain/model"
 )
 
 type Verror struct {
@@ -65,7 +65,7 @@ func NewArticleResponseWith() *ArticleResponse {
 	return &ArticleResponse{}
 }
 
-func (ar *ArticleResponse) Article(article *models.Article) *ArticleResponse {
+func (ar *ArticleResponse) Article(article *model.Article) *ArticleResponse {
 	ar.Id = article.Id
 	ar.AuthorName = article.AuthorName
 	ar.Content = article.Content

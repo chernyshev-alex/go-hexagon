@@ -1,8 +1,8 @@
 package adapters
 
 import (
-	"github.com/chernyshev-alex/go-hexagon/domain/models"
-	"github.com/chernyshev-alex/go-hexagon/domain/ports"
+	"github.com/chernyshev-alex/go-hexagon/domain/model"
+	"github.com/chernyshev-alex/go-hexagon/ports"
 	"gorm.io/gorm"
 )
 
@@ -23,7 +23,7 @@ func AutoMigrate(db *gorm.DB) error {
 
 type ArticleDatabaseModelOpt func(*ArticleDatabaseModel)
 
-func NewDbArticleModel(author *models.Author, title string, ops ...ArticleDatabaseModelOpt) *ArticleDatabaseModel {
+func NewDbArticleModel(author *model.Author, title string, ops ...ArticleDatabaseModelOpt) *ArticleDatabaseModel {
 	m := &ArticleDatabaseModel{
 		Title:      title,
 		Content:    "",
@@ -35,12 +35,12 @@ func NewDbArticleModel(author *models.Author, title string, ops ...ArticleDataba
 	return m
 }
 
-func (a *ArticleDatabaseModel) ToDomain() *models.Article {
-	return models.NewArticleOpt(
-		models.ArticleWithTitle(a.Title),
-		models.ArticleWithAuthor(a.AuthorName),
-		models.ArticleWithId(a.ID),
-		models.ArticleWithContent(a.Content))
+func (a *ArticleDatabaseModel) ToDomain() *model.Article {
+	return model.NewArticleOpt(
+		model.ArticleWithTitle(a.Title),
+		model.ArticleWithAuthor(a.AuthorName),
+		model.ArticleWithId(a.ID),
+		model.ArticleWithContent(a.Content))
 }
 
 func DbArticleModelWithContent(content string) ArticleDatabaseModelOpt {
@@ -59,7 +59,7 @@ func NewDbArticleRepository(db *gorm.DB) *DbArticleRepository {
 	return &DbArticleRepository{db: db}
 }
 
-func (r *DbArticleRepository) Get(id uint) (*models.Article, error) {
+func (r *DbArticleRepository) Get(id uint) (*model.Article, error) {
 	var db_article ArticleDatabaseModel
 	if err := r.db.First(&db_article, id).Error; err != nil {
 		return nil, err
@@ -67,7 +67,7 @@ func (r *DbArticleRepository) Get(id uint) (*models.Article, error) {
 	return db_article.ToDomain(), nil
 }
 
-func (r *DbArticleRepository) Save(author *models.Author, title string, content string) (*models.Article, error) {
+func (r *DbArticleRepository) Save(author *model.Author, title string, content string) (*model.Article, error) {
 	db_model := NewDbArticleModel(author, title, DbArticleModelWithContent(content))
 	if err := r.db.Create(&db_model).Error; err != nil {
 		return nil, err

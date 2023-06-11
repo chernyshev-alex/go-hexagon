@@ -3,8 +3,8 @@ package adapters
 import (
 	"fmt"
 
-	"github.com/chernyshev-alex/go-hexagon/domain/models"
-	"github.com/chernyshev-alex/go-hexagon/domain/ports"
+	"github.com/chernyshev-alex/go-hexagon/domain/model"
+	"github.com/chernyshev-alex/go-hexagon/ports"
 )
 
 type AuthorExternalModel struct {
@@ -24,8 +24,8 @@ func (m AuthorExternalModel) FullName() string {
 	return fmt.Sprintf("%s %s", m.firstName, m.lastName)
 }
 
-func (m AuthorExternalModel) ToDomain() *models.Author {
-	return models.NewAuthor(m.id, m.FullName())
+func (m AuthorExternalModel) ToDomain() *model.Author {
+	return model.NewAuthor(m.id, m.FullName())
 
 }
 
@@ -45,6 +45,6 @@ func NewExtSvcClientAuthorRepository(client interface{}) *ExtSvcClientAuthorRepo
 	}
 }
 
-func (r ExtSvcClientAuthorRepository) Get(authorId string) (*models.Author, error) {
-	return models.NewAuthor("1", "John Doyle"), nil
+func (r ExtSvcClientAuthorRepository) Get(authorId string) (*model.Author, error) {
+	return model.NewAuthor("1", "John Doyle"), nil
 }

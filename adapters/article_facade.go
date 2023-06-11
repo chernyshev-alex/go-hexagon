@@ -1,7 +1,7 @@
 package adapters
 
 import (
-	"github.com/chernyshev-alex/go-hexagon/domain/ports"
+	"github.com/chernyshev-alex/go-hexagon/ports"
 )
 
 type ArticleFacade interface {

@@ -3,16 +3,16 @@ package ports
 import (
 	"strconv"
 
-	m "github.com/chernyshev-alex/go-hexagon/domain/models"
+	"github.com/chernyshev-alex/go-hexagon/domain/model"
 )
 
 type ArticleService struct {
 	articleRepository ArticleRepository
 	authorRepository  AuthorRepository
-	eventPublisher    ArticlePublisher
+	eventPublisher    ArticlePublisherRetriever
 }
 
-func NewArticleService(ar ArticleRepository, ur AuthorRepository, ap ArticlePublisher) *ArticleService {
+func NewArticleService(ar ArticleRepository, ur AuthorRepository, ap ArticlePublisherRetriever) *ArticleService {
 	return &ArticleService{
 		articleRepository: ar,
 		authorRepository:  ur,
@@ -34,11 +34,11 @@ func (s ArticleService) Create(authorId, title, content string) (string, error) 
 	}
 }
 
-func (s ArticleService) Get(id string) (article *m.Article, err error) {
-	dbId, _ := strconv.Atoi(id)
+func (s ArticleService) Get(articleId string) (article *model.Article, err error) {
+	dbId, _ := strconv.Atoi(articleId)
 	if article, err = s.articleRepository.Get(uint(dbId)); err != nil {
 		return nil, err
 	}
-	err = s.eventPublisher.publishRetrievalOf(article)
+	err = s.eventPublisher.PublishRetrievalOf(article)
 	return article, err
 }

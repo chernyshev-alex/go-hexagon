@@ -1,4 +1,4 @@
-package adapters
+package workflow
 
 import (
 	"context"
@@ -7,7 +7,7 @@ import (
 
 	"log"
 
-	"github.com/chernyshev-alex/go-hexagon/domain/ports"
+	"github.com/chernyshev-alex/go-hexagon/ports"
 	"github.com/google/uuid"
 	"go.temporal.io/sdk/client"
 	"go.temporal.io/sdk/temporal"
@@ -89,6 +89,7 @@ func (s sendToAuthorWorkflow) notifySmsWorkflow(ctx workflow.Context) error {
 
 	ctx = workflow.WithActivityOptions(ctx, opts)
 	logger := workflow.GetLogger(ctx)
+
 	if err := workflow.ExecuteActivity(ctx, s.sendSmsActivity).Get(ctx, nil); err != nil {
 		logger.Error("Activity failed", "Error", err)
 		return err

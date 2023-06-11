@@ -3,8 +3,8 @@ package adapters
 import (
 	"fmt"
 
-	"github.com/chernyshev-alex/go-hexagon/domain/models"
-	"github.com/chernyshev-alex/go-hexagon/domain/ports"
+	"github.com/chernyshev-alex/go-hexagon/domain/model"
+	"github.com/chernyshev-alex/go-hexagon/ports"
 )
 
 const TWEET = "Check out the new article >>%s<< by %s"
@@ -21,7 +21,7 @@ func NewArticleTwitterModel(twitterAccount string, tweet string) *ArticleTwitter
 	}
 }
 
-func NewArticleTwitterModelFromArticle(a *models.Article) *ArticleTwitterModel {
+func NewArticleTwitterModelFromArticle(a *model.Article) *ArticleTwitterModel {
 	return NewArticleTwitterModel(a.AuthorName, fmt.Sprintf(TWEET, a.Title, a.AuthorName))
 }
 
@@ -47,7 +47,7 @@ func NewTwitterArticlePublisher(c *TwitterClient) *TwitterArticlePublisher {
 	}
 }
 
-func (p *TwitterArticlePublisher) Publish(a *models.Article) error {
+func (p *TwitterArticlePublisher) Publish(a *model.Article) error {
 	articleTweet := NewArticleTwitterModelFromArticle(a)
 	p.client.tweet(articleTweet)
 	return nil

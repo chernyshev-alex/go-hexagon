@@ -4,16 +4,16 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/chernyshev-alex/go-hexagon/domain/models"
-	"github.com/chernyshev-alex/go-hexagon/domain/ports"
+	"github.com/chernyshev-alex/go-hexagon/domain/model"
+	"github.com/chernyshev-alex/go-hexagon/ports"
 )
 
 type ArticleCreatedMessage struct {
-	article *models.Article
+	article *model.Article
 	ts      time.Time
 }
 
-func NewArticleCreatedMsg(a *models.Article) *ArticleCreatedMessage {
+func NewArticleCreatedMsg(a *model.Article) *ArticleCreatedMessage {
 	return &ArticleCreatedMessage{
 		article: a,
 		ts:      time.Now(),
@@ -25,11 +25,11 @@ func (acm ArticleCreatedMessage) ToString() string {
 }
 
 type ArticleRetrievedMessage struct {
-	article *models.Article
+	article *model.Article
 	ts      time.Time
 }
 
-func NewArticleRetrievedMsg(article *models.Article) *ArticleRetrievedMessage {
+func NewArticleRetrievedMsg(article *model.Article) *ArticleRetrievedMessage {
 	return &ArticleRetrievedMessage{
 		article: article,
 		ts:      time.Now(),
@@ -51,12 +51,12 @@ func NewMbArticleMessageSender(client interface{}) *MbArticleMessageSender {
 	return &MbArticleMessageSender{mbClient: client}
 }
 
-func (mb MbArticleMessageSender) SendMessageForCreated(a *models.Article) error {
+func (mb MbArticleMessageSender) SendMessageForCreated(a *model.Article) error {
 	_ = NewArticleCreatedMsg(a) // send msg here
 	return nil
 }
 
-func (mb MbArticleMessageSender) SendMessageForRetrieved(a *models.Article) error {
+func (mb MbArticleMessageSender) SendMessageForRetrieved(a *model.Article) error {
 	_ = NewArticleRetrievedMsg(a)
 	return nil
 }

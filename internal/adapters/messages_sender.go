@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/chernyshev-alex/go-hexagon/domain/model"
-	"github.com/chernyshev-alex/go-hexagon/ports"
+	"github.com/chernyshev-alex/go-hexagon/internal/domain/model"
+	"github.com/chernyshev-alex/go-hexagon/internal/domain/ports"
 )
 
 type ArticleCreatedMessage struct {

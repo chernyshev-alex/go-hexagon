@@ -1,8 +1,8 @@
 package adapters
 
 import (
-	"github.com/chernyshev-alex/go-hexagon/domain/model"
-	"github.com/chernyshev-alex/go-hexagon/ports"
+	"github.com/chernyshev-alex/go-hexagon/internal/domain/model"
+	"github.com/chernyshev-alex/go-hexagon/internal/domain/ports"
 	"gorm.io/gorm"
 )
 

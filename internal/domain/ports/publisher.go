@@ -1,7 +1,7 @@
 package ports
 
 import (
-	models "github.com/chernyshev-alex/go-hexagon/domain/model"
+	models "github.com/chernyshev-alex/go-hexagon/internal/domain/model"
 )
 
 type ArticleMessageSender interface {

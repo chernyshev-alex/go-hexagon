@@ -6,7 +6,7 @@ import (
 	"log"
 	"time"
 
-	models "github.com/chernyshev-alex/go-hexagon/domain/model"
+	models "github.com/chernyshev-alex/go-hexagon/internal/domain/model"
 	"github.com/google/uuid"
 	"go.temporal.io/sdk/client"
 	"go.temporal.io/sdk/workflow"

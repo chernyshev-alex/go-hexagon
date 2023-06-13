@@ -7,7 +7,7 @@ import (
 
 	"log"
 
-	"github.com/chernyshev-alex/go-hexagon/ports"
+	"github.com/chernyshev-alex/go-hexagon/internal/domain/ports"
 	"github.com/google/uuid"
 	"go.temporal.io/sdk/client"
 	"go.temporal.io/sdk/temporal"

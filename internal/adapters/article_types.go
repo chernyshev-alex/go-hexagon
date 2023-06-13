@@ -3,7 +3,7 @@ package adapters
 import (
 	"errors"
 
-	"github.com/chernyshev-alex/go-hexagon/domain/model"
+	"github.com/chernyshev-alex/go-hexagon/internal/domain/model"
 )
 
 type Verror struct {

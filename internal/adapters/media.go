@@ -3,8 +3,8 @@ package adapters
 import (
 	"fmt"
 
-	"github.com/chernyshev-alex/go-hexagon/domain/model"
-	"github.com/chernyshev-alex/go-hexagon/ports"
+	"github.com/chernyshev-alex/go-hexagon/internal/domain/model"
+	"github.com/chernyshev-alex/go-hexagon/internal/domain/ports"
 )
 
 const TWEET = "Check out the new article >>%s<< by %s"

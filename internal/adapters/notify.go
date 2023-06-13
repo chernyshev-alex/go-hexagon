@@ -3,8 +3,8 @@ package adapters
 import (
 	"fmt"
 
-	models "github.com/chernyshev-alex/go-hexagon/domain/model"
-	"github.com/chernyshev-alex/go-hexagon/ports"
+	models "github.com/chernyshev-alex/go-hexagon/internal/domain/model"
+	"github.com/chernyshev-alex/go-hexagon/internal/domain/ports"
 )
 
 const (

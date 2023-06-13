@@ -3,7 +3,7 @@ package ports
 import (
 	"strconv"
 
-	"github.com/chernyshev-alex/go-hexagon/domain/model"
+	"github.com/chernyshev-alex/go-hexagon/internal/domain/model"
 )
 
 type ArticleService struct {

@@ -47,7 +47,6 @@ func (p ForkJoinWorkflow) RunEtlWorkFlow() error {
 func (p ForkJoinWorkflow) ParentWorkflow(ctx workflow.Context, branches Branches) ([]string, error) {
 	futures := []workflow.Future{}
 	for k, v := range branches {
-		//for i := 0; i < 5; i++ {
 		childCtx := workflow.WithChildOptions(ctx, workflow.ChildWorkflowOptions{})
 		future := workflow.ExecuteChildWorkflow(childCtx, p.TaskChildWorkflow, fmt.Sprintf("Task-%s", k), v)
 		futures = append(futures, future)

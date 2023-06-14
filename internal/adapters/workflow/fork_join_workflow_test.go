@@ -32,7 +32,7 @@ func TestForkJoinWorkflow(t *testing.T) {
 
 // UI  http://localhost:8233/
 
-func TestForkJoinWorker(t *testing.T) {
+func TestRunForkJoinWorker(t *testing.T) {
 	cli, _ := client.Dial(client.Options{})
 	defer cli.Close()
 

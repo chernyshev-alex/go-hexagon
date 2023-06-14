@@ -10,9 +10,7 @@ import (
 	"go.temporal.io/sdk/workflow"
 )
 
-type Action string
-type Branches map[string]Action
-type DagDefinition map[string]Branches
+type DagDefinition = map[string]map[string]string
 
 type ForkJoinWorkflow struct {
 	name string
@@ -44,9 +42,9 @@ func (p ForkJoinWorkflow) RunEtlWorkFlow() error {
 	return nil
 }
 
-func (p ForkJoinWorkflow) ParentWorkflow(ctx workflow.Context, branches Branches) ([]string, error) {
+func (p ForkJoinWorkflow) ParentWorkflow(ctx workflow.Context, branch map[string]string) ([]string, error) {
 	futures := []workflow.Future{}
-	for k, v := range branches {
+	for k, v := range branch {
 		childCtx := workflow.WithChildOptions(ctx, workflow.ChildWorkflowOptions{})
 		future := workflow.ExecuteChildWorkflow(childCtx, p.TaskChildWorkflow, fmt.Sprintf("Task-%s", k), v)
 		futures = append(futures, future)

@@ -6,6 +6,7 @@ import (
 	"math/rand"
 	"time"
 
+	"github.com/google/uuid"
 	"go.temporal.io/sdk/client"
 	"go.temporal.io/sdk/temporal"
 	"go.temporal.io/sdk/workflow"
@@ -34,7 +35,6 @@ func ForkWorkflow(ctx workflow.Context, pipeline map[string][]string, order []st
 				ctx1 := workflow.WithChildOptions(ctx, workflow.ChildWorkflowOptions{
 					WorkflowID:  branch,
 					RetryPolicy: &temporal.RetryPolicy{},
-					// CronSchedule: "* * * * *",
 				})
 
 				var result string
@@ -43,7 +43,6 @@ func ForkWorkflow(ctx workflow.Context, pipeline map[string][]string, order []st
 				} else {
 					results = append(results, result)
 				}
-
 				doneCh.Send(ctx, nil)
 			})
 		}
@@ -58,8 +57,12 @@ func RunWorflow(pipeline map[string][]string, order []string) {
 	c, _ := client.Dial(client.Options{})
 
 	ctx := context.Background()
-	MustWorkflow(func() (client.WorkflowRun, error) {
-		options := client.StartWorkflowOptions{TaskQueue: fork_queue}
+	_ = MustWorkflow(func() (client.WorkflowRun, error) {
+		options := client.StartWorkflowOptions{
+			ID:           fmt.Sprintf("%s-%s", "ETL-1", uuid.NewString()[:4]),
+			CronSchedule: "*/2 * * * *",
+			TaskQueue:    fork_queue,
+		}
 		return c.ExecuteWorkflow(ctx, options, ForkWorkflow, pipeline, order)
 	}).Get(ctx, nil)
 }

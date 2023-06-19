@@ -14,6 +14,28 @@ import (
 
 var fork_queue = "my-task-queue"
 
+func RunWorflow(pipeline map[string][]string, order []string) {
+	c, _ := client.Dial(client.Options{})
+
+	ctx := context.Background()
+	_ = MustWorkflow(func() (client.WorkflowRun, error) {
+		options := client.StartWorkflowOptions{
+			ID:           fmt.Sprintf("%s-%s", "ETL-1", uuid.NewString()[:4]),
+			CronSchedule: "*/2 * * * *",
+			TaskQueue:    fork_queue,
+		}
+		return c.ExecuteWorkflow(ctx, options, ForkWorkflow, pipeline, order)
+	}).Get(ctx, nil)
+}
+
+func MustWorkflow(wf func() (client.WorkflowRun, error)) client.WorkflowRun {
+	if f, err := wf(); err != nil {
+		panic(err)
+	} else {
+		return f
+	}
+}
+
 var _ = rand.New(rand.NewSource(32))
 
 func BranchWorkflow(ctx workflow.Context, message string) (string, error) {
@@ -51,26 +73,4 @@ func ForkWorkflow(ctx workflow.Context, pipeline map[string][]string, order []st
 		}
 	}
 	return results, nil
-}
-
-func RunWorflow(pipeline map[string][]string, order []string) {
-	c, _ := client.Dial(client.Options{})
-
-	ctx := context.Background()
-	_ = MustWorkflow(func() (client.WorkflowRun, error) {
-		options := client.StartWorkflowOptions{
-			ID:           fmt.Sprintf("%s-%s", "ETL-1", uuid.NewString()[:4]),
-			CronSchedule: "*/2 * * * *",
-			TaskQueue:    fork_queue,
-		}
-		return c.ExecuteWorkflow(ctx, options, ForkWorkflow, pipeline, order)
-	}).Get(ctx, nil)
-}
-
-func MustWorkflow(wf func() (client.WorkflowRun, error)) client.WorkflowRun {
-	if f, err := wf(); err != nil {
-		panic(err)
-	} else {
-		return f
-	}
 }

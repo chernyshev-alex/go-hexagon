@@ -45,10 +45,15 @@ func NewArticlePublisher(ms ArticleMessageSender,
 	}
 }
 
+type PostCreationArticleWorkflow interface {
+	Execute() error
+}
+
 func (p ArticlePublisher) PublishCreationOf(article *models.Article) (err error) {
 	if err = p.sender.SendMessageForCreated(article); err != nil {
 		return err
 	}
+
 	for _, pub := range p.publishers {
 		err = pub.Publish(article)
 	}

@@ -27,42 +27,41 @@ type ArticlePublisherRetriever interface {
 	PublishCreationOf(*models.Article) error
 }
 
+type PublishProvider interface {
+	PublishArticleCreated(*models.Article) error
+	PublishArticleRetrieved(*models.Article) error
+}
+
 type ArticlePublisher struct {
 	ArticlePublisherRetriever
-	sender     ArticleMessageSender
-	publishers []SocialMediaPublisher
-	notifiers  []AuthorNotifier
+	sender         ArticleMessageSender
+	publisProvider PublishProvider
 }
 
-func NewArticlePublisher(ms ArticleMessageSender,
-	pubs []SocialMediaPublisher,
-	nfs []AuthorNotifier) *ArticlePublisher {
-
+func NewArticlePublisher(ms ArticleMessageSender, pp PublishProvider) *ArticlePublisher {
 	return &ArticlePublisher{
-		sender:     ms,
-		publishers: pubs,
-		notifiers:  nfs,
+		sender:         ms,
+		publisProvider: pp,
 	}
 }
 
-type PostCreationArticleWorkflow interface {
-	Execute() error
-}
+func (p ArticlePublisher) PublishCreationOf(article *models.Article) error {
+	return p.publisProvider.PublishArticleCreated(article)
 
-func (p ArticlePublisher) PublishCreationOf(article *models.Article) (err error) {
-	if err = p.sender.SendMessageForCreated(article); err != nil {
-		return err
-	}
+	// if err = p.sender.SendMessageForCreated(article); err != nil {
+	// 	return err
+	// }
 
-	for _, pub := range p.publishers {
-		err = pub.Publish(article)
-	}
-	for _, ntf := range p.notifiers {
-		err = ntf.NotifyAboutCreationOf(article)
-	}
-	return err
+	// for _, pub := range p.publishers {
+	// 	err = pub.Publish(article)
+	// }
+	// for _, ntf := range p.notifiers {
+	// 	err = ntf.NotifyAboutCreationOf(article)
+	// }
+	// return err
 }
 
 func (p ArticlePublisher) publishRetrievalOf(article *models.Article) error {
-	return p.sender.SendMessageForRetrieved(article)
+	return p.publisProvider.PublishArticleRetrieved(article)
+	// return p.sender.SendMessageForRetrieved(article)
 }

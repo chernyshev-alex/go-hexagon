@@ -47,21 +47,8 @@ func NewArticlePublisher(ms ArticleMessageSender, pp PublishProvider) *ArticlePu
 
 func (p ArticlePublisher) PublishCreationOf(article *models.Article) error {
 	return p.publisProvider.PublishArticleCreated(article)
-
-	// if err = p.sender.SendMessageForCreated(article); err != nil {
-	// 	return err
-	// }
-
-	// for _, pub := range p.publishers {
-	// 	err = pub.Publish(article)
-	// }
-	// for _, ntf := range p.notifiers {
-	// 	err = ntf.NotifyAboutCreationOf(article)
-	// }
-	// return err
 }
 
-func (p ArticlePublisher) publishRetrievalOf(article *models.Article) error {
+func (p ArticlePublisher) PublishRetrievalOf(article *models.Article) error {
 	return p.publisProvider.PublishArticleRetrieved(article)
-	// return p.sender.SendMessageForRetrieved(article)
 }

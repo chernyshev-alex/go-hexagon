@@ -9,10 +9,10 @@ import (
 type ArticleService struct {
 	articleRepository ArticleRepository
 	authorRepository  AuthorRepository
-	publisher         ArticlePublisher
+	publisher         *ArticlePublisher
 }
 
-func NewArticleService(ar ArticleRepository, ur AuthorRepository, ap ArticlePublisher) *ArticleService {
+func NewArticleService(ar ArticleRepository, ur AuthorRepository, ap *ArticlePublisher) *ArticleService {
 	return &ArticleService{
 		articleRepository: ar,
 		authorRepository:  ur,

@@ -14,13 +14,11 @@ type ArticleFacade interface {
 var _ ArticleFacade = (*ArticleFacadeImpl)(nil)
 
 type ArticleFacadeImpl struct {
-	articleService ports.ArticleService
+	articleService *ports.ArticleService
 }
 
-func NewArticleFacade(service ports.ArticleService) ArticleFacadeImpl {
-	return ArticleFacadeImpl{
-		articleService: service,
-	}
+func NewArticleFacade(service *ports.ArticleService) *ArticleFacadeImpl {
+	return &ArticleFacadeImpl{articleService: service}
 }
 
 func (f ArticleFacadeImpl) Get(articleId string) (*ArticleResponse, error) {

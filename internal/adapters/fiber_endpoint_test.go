@@ -119,7 +119,7 @@ func TestCreateArticle(t *testing.T) {
 func configureEndPoint(facade MockedFacade) *fiber.App {
 	endpoint := NewEndpoint(facade)
 	app := fiber.New()
-	endpoint.addRoutes(app)
+	endpoint.AddRoutes(app)
 	return app
 }
 

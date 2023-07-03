@@ -16,12 +16,12 @@ import (
 	"gorm.io/gorm"
 )
 
-func initializeDB() (*gorm.DB, error) {
-	db, err := gorm.Open(sqlite.Open("file::memory:?cache=shared"), &gorm.Config{})
-	if err != nil {
+func initializeDB(conf *gorm.Config) (*gorm.DB, error) {
+	if db, err := gorm.Open(sqlite.Open("file::memory:?cache=shared"), conf); err != nil {
 		panic(err)
+	} else {
+		return db, nil
 	}
-	return db, nil
 }
 
 func initializeArticleRepository(db *gorm.DB) ports.ArticleRepository {

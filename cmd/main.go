@@ -6,9 +6,9 @@ import (
 )
 
 func main() {
-	app, err := initializeWire()
-	if err != nil {
+	if app, err := initializeWire(); err != nil {
 		log.Fatal(err)
+	} else {
+		app.Listen(":3000")
 	}
-	app.Listen(":3000")
 }

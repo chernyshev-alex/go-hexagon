@@ -22,7 +22,7 @@ func NewArticleTwitterModel(twitterAccount string, tweet string) *ArticleTwitter
 }
 
 func NewArticleTwitterModelFromArticle(a *model.Article) *ArticleTwitterModel {
-	return NewArticleTwitterModel(a.AuthorName, fmt.Sprintf(TWEET, a.Title, a.AuthorName))
+	return NewArticleTwitterModel(a.Author.Name, fmt.Sprintf(TWEET, a.Title, a.Author.Name))
 }
 
 func (m ArticleTwitterModel) ToString() string {

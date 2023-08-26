@@ -80,11 +80,11 @@ func initializeArticleFacade(articleService *ports.ArticleService) adapters.Arti
 	return adapters.NewArticleFacade(articleService)
 }
 
-func initializeEndpoint(facade adapters.ArticleFacade) adapters.FiberEndpoint {
+func initializeEndpoint(facade adapters.ArticleFacade) adapters.HttpEndpoint {
 	return adapters.NewEndpoint(facade)
 }
 
-func initializeApp(endpoint adapters.FiberEndpoint) *fiber.App {
+func initializeApp(endpoint adapters.HttpEndpoint) *fiber.App {
 	app := fiber.New()
 	endpoint.AddRoutes(app)
 	return app

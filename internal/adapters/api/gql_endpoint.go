@@ -1,6 +1,7 @@
-package adapters
+package api
 
 import (
+	"context"
 	"encoding/json"
 
 	"github.com/gofiber/fiber/v2"
@@ -18,8 +19,8 @@ type gqlRequestBody struct {
 	Query string `json:"query"`
 }
 
-func (ap *FiberEndpoint) SearchBy(what, value string) ([]*ArticleResponse, error) {
-	return ap.articleFacade.SearchBy(what, value)
+func (ap HttpEndpoint) SearchBy(ctx context.Context, what, value string) ([]ArticleResponse, error) {
+	return ap.articleFacade.SearchBy(ctx, what, value)
 }
 
 var articleType = graphql.NewObject(
@@ -33,13 +34,13 @@ var articleType = graphql.NewObject(
 		},
 	})
 
-func (ap *FiberEndpoint) FieldsResolver(params graphql.ResolveParams) (interface{}, error) {
-	var articles []*ArticleResponse
+func (ap *HttpEndpoint) FieldsResolver(params graphql.ResolveParams) (interface{}, error) {
+	var articles []ArticleResponse
 	title, _ := params.Args[gql_Title].(string)
 	authorName, _ := params.Args[gql_AuthorName].(string)
 
 	if len(authorName) > 0 {
-		result, err := ap.articleFacade.SearchBy(gql_AuthorName, authorName)
+		result, err := ap.articleFacade.SearchBy(context.TODO(), gql_AuthorName, authorName)
 		if err != nil {
 			return nil, err
 		}
@@ -56,7 +57,7 @@ func (ap *FiberEndpoint) FieldsResolver(params graphql.ResolveParams) (interface
 	return articles, nil
 }
 
-func (ap *FiberEndpoint) getGraphQlHandler() fiber.Handler {
+func (ap *HttpEndpoint) getGraphQlHandler() fiber.Handler {
 	var queryType = graphql.NewObject(graphql.ObjectConfig{
 		Name: "Query",
 

@@ -58,6 +58,7 @@ require (
 	github.com/graphql-go/graphql v0.8.0
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	go.temporal.io/sdk v1.22.2
+	golang.org/x/sync v0.3.0
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	gorm.io/driver/sqlite v1.5.2
 	gorm.io/gorm v1.25.2-0.20230530020048-26663ab9bf55

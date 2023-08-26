@@ -7,7 +7,6 @@ import (
 	"time"
 
 	models "github.com/chernyshev-alex/go-hexagon/internal/domain/model"
-	"github.com/chernyshev-alex/go-hexagon/internal/domain/ports"
 	"github.com/google/uuid"
 	"go.temporal.io/sdk/client"
 	"go.temporal.io/sdk/worker"
@@ -17,8 +16,6 @@ import (
 type PublishProviderWorkflow struct{}
 type ArticleCreatedWorklow struct{}
 type ArticleRetrieverWorklow struct{}
-
-var _ ports.PublishProvider = (*PublishProviderWorkflow)(nil)
 
 func (p PublishProviderWorkflow) PublishArticleCreated(article *models.Article) error {
 	return ArticleCreatedWorklow{}.Run(article)
@@ -31,7 +28,7 @@ func (p ArticleCreatedWorklow) Run(article *models.Article) error {
 	defer c.Close()
 
 	opts := client.StartWorkflowOptions{
-		ID:        fmt.Sprintf("%s-%s-%s", name, article.Id, uuid.NewString()),
+		ID:        fmt.Sprintf("%s-%d-%s", name, article.ID, uuid.NewString()),
 		TaskQueue: name + "-queue",
 	}
 	if _, err := c.ExecuteWorkflow(context.Background(), opts, p.publishCreationOfWorkflow, article); err != nil {
@@ -63,7 +60,7 @@ func (p ArticleRetrieverWorklow) Run(article *models.Article) error {
 	defer c.Close()
 
 	opts := client.StartWorkflowOptions{
-		ID:        fmt.Sprintf("%s-%s-%s", name, article.Id, uuid.NewString()),
+		ID:        fmt.Sprintf("%s-%d-%s", name, article.ID, uuid.NewString()),
 		TaskQueue: name + "-queue",
 	}
 	if _, err := c.ExecuteWorkflow(context.Background(), opts, p.publishRetrievalOfWorkflow, article); err != nil {

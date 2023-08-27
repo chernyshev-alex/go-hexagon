@@ -2,14 +2,15 @@ package api
 
 import (
 	"context"
+	"strconv"
 
 	"github.com/chernyshev-alex/go-hexagon/internal/domain/ports"
 )
 
-//go:generate go run github.com/vektra/mockery/v2@v2.32.4 --name ArticleFacade
+//go:generate go run github.com/vektra/mockery/v2@v2.33.0 --name ArticleFacade
 type ArticleFacade interface {
-	Get(ctx context.Context, articleId string) (ArticleResponse, error)
 	Create(context.Context, ArticleRequest) (ArticleResponse, error)
+	Get(ctx context.Context, articleId string) (ArticleResponse, error)
 	SearchBy(ctx context.Context, what, value string) ([]ArticleResponse, error)
 }
 
@@ -29,10 +30,23 @@ func (f articleFacade) Create(ctx context.Context, rq ArticleRequest) (ArticleRe
 	}
 }
 
-func (articleFacade) Get(ctx context.Context, articleId string) (ArticleResponse, error) {
-	panic("unimplemented")
+func (f articleFacade) Get(ctx context.Context, articleId string) (ArticleResponse, error) {
+	id := mustBeInt(articleId)
+	if article, err := f.service.GetByID(ctx, int64(id)); err != nil {
+		return ArticleResponse{}, err
+	} else {
+		return NewArticleResponse(&article), nil
+	}
 }
 
 func (articleFacade) SearchBy(ctx context.Context, what string, value string) ([]ArticleResponse, error) {
 	panic("unimplemented")
+}
+
+func mustBeInt(articleId string) int {
+	if id, err := strconv.Atoi(articleId); err != nil {
+		panic(err)
+	} else {
+		return id
+	}
 }

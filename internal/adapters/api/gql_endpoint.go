@@ -15,7 +15,7 @@ const (
 	gql_Content    = "content"
 )
 
-type gqlRequestBody struct {
+type GqlRequestBody struct {
 	Query string `json:"query"`
 }
 
@@ -74,7 +74,7 @@ func (ap *HttpEndpoint) getGraphQlHandler() fiber.Handler {
 		}})
 
 	return func(c *fiber.Ctx) error {
-		var reqBody gqlRequestBody
+		var reqBody GqlRequestBody
 		if err := json.Unmarshal([]byte(c.Body()), &reqBody); err != nil {
 			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": err.Error()})
 		}

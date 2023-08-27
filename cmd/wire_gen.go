@@ -7,16 +7,16 @@
 package cmd
 
 import (
+	"net/http"
+	"time"
+
 	"github.com/chernyshev-alex/go-hexagon/internal/adapters"
 	"github.com/chernyshev-alex/go-hexagon/internal/adapters/flows"
 	"github.com/chernyshev-alex/go-hexagon/internal/domain/ports"
 	"github.com/gofiber/fiber/v2"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
-	"net/http"
-)
 
-import (
 	_ "github.com/google/wire/cmd/wire"
 )
 
@@ -70,14 +70,18 @@ func initializeArticlePublisher(articleMessageSender ports.ArticleMessageSender,
 	return ports.NewArticlePublisher(articleMessageSender, publishProvider)
 }
 
-func initializeArticleService(articleRepository ports.ArticleRepository,
+func initializeArticleService(
+	articleRepository ports.ArticleRepository,
 	authorRepository ports.AuthorRepository,
-	articlePublisher *ports.ArticlePublisher) *ports.ArticleService {
-	return ports.NewArticleService(articleRepository, authorRepository, articlePublisher)
+	articlePublisher ports.ArticlePublisher) *ports.ArticleService {
+	return ports.NewArticleService(
+		articleRepository,
+		authorRepository, 
+		articlePublisher, time.Second *2)
 }
 
 func initializeArticleFacade(articleService *ports.ArticleService) adapters.ArticleFacade {
-	return adapters.NewArticleFacade(articleService)
+	return adapters.NewArticleFacade(articeService)
 }
 
 func initializeEndpoint(facade adapters.ArticleFacade) adapters.HttpEndpoint {
